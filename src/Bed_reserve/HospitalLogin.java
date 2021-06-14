@@ -103,7 +103,6 @@ public class HospitalLogin {
                     }
                 }
             } else {
-                System.out.println("\n\tPlease Enter correct login credentials..");
                 System.out.print("\n\tForgot password [Y/N] : ");
                 String forgot_password = sc.nextLine().toUpperCase();
                 if (forgot_password.equals("Y")) {
@@ -131,6 +130,7 @@ public class HospitalLogin {
             if (otpUser.equals(otpStr)) {
                 String password = SecurityUtils.encryption(LoginUtils.getPassword());
                 hospitalDb.updateHospitalPassword(hospitalId, password);
+                flag=true;
                 break;
             } else {
                 System.out.println("\nPlease enter the correct otp sent your registered number");

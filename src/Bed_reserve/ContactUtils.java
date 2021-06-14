@@ -26,7 +26,7 @@ public class ContactUtils {
                     if (resend.equals("Y")) {
                         SendSms.sendSms(message, contact);
                     }
-                    System.out.println("\n To Change number,  press  1 ");
+                    System.out.print("\n To Change number,  press  1 : ");
                     String back = sc.nextLine();
                     if (back.equals("1")) {
                         continue;
