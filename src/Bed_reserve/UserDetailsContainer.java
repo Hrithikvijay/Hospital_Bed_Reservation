@@ -1,8 +1,8 @@
 package Bed_reserve;
 
-public class User_details {
-    private String adhaar_id;
-    private String user_name;
+public class UserDetailsContainer {
+    private String adhaarId;
+    private String userName;
     private String address;
     private String district;
     private String state;
@@ -10,12 +10,12 @@ public class User_details {
     private String gender;
     private String contact;
 
-    public void setAdhaar_id(String adhaar_id) {
-        this.adhaar_id = adhaar_id;
+    public void setAdhaarId(String adhaarId) {
+        this.adhaarId = adhaarId;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setAddress(String address) {
@@ -42,12 +42,12 @@ public class User_details {
         this.contact = contact;
     }
 
-    public String getAdhaar_id() {
-        return adhaar_id;
+    public String getAdhaarId() {
+        return adhaarId;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
     public String getAddress() {

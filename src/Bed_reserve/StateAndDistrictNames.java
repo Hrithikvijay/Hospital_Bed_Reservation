@@ -2,7 +2,7 @@ package Bed_reserve;
 
 import java.util.Scanner;
 
-public class State_and_district {
+public class StateAndDistrictNames {
         private static String[][] india = {
                         { "Andaman and Nicobar Islands", "Nicobars", "North And Middle Andaman", "South Andaman" },
                         { "AndhraPradesh", "Anantapur", "Chittoor", "East Godavari", "Guntur", "Kadapa", "Krishna",
@@ -142,11 +142,11 @@ public class State_and_district {
                                         "Paschim Bardhaman", "Paschim Medinipur", "Purba Bardhaman", "Purba Medinipur",
                                         "Purulia", "South 24 Parganas", "Uttar Dinajpur" } };
 
-        public static String[] get_district() {
+        public static String[] getDistrict() {
                 // select state and district...
                 Scanner sc = new Scanner(System.in);
                 int state;
-                String state_name;
+                String stateName;
                 String district;
                 System.out.println("\n\tplease select the State    :\n");
                 int state_count = 1;
@@ -155,7 +155,7 @@ public class State_and_district {
                 }
                 System.out.print("\n\tEnter the State No : ");
                 state = sc.nextInt();
-                state_name = india[state - 1][0];
+                stateName = india[state - 1][0];
                 System.out.println("\n\tplease select the District :");
                 int district_count = 1;
                 for (int i = 1; i < india[state - 1].length; i++, district_count++) {
@@ -163,8 +163,8 @@ public class State_and_district {
                 }
                 System.out.print("\nEnter the District NO : ");
                 district = india[state - 1][sc.nextInt()];
-                String[] state_and_district = { state_name, district };
-                return state_and_district;
+                String[] stateAndDistrict = { stateName, district };
+                return stateAndDistrict;
         }
 
 }

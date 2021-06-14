@@ -3,8 +3,7 @@ package Bed_reserve;
 import java.util.*;
 import java.sql.*;
 
-public class Database implements Hospital_interface, Insert_bed_details_interface, User_interface,
-        Register_user_interface, Reserve_bed_interface {
+public class Database implements HospitalDatabaseInterface, UserDatabaseInterface, ReserveBedInterface {
     private static Database single = null;
 
     private Database() {
@@ -22,12 +21,12 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         Connection connection = null;
         Class.forName("com.mysql.cj.jdbc.Driver");
         // Please enter your local host password
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bed_reservation", "root", "PASSWORD");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bed_reservation", "root", "#Hrithik25");
         return connection;
 
     }
 
-    public void insertHospitalDetail(Hospital_details hosp) throws SQLException {
+    public void insertHospitalDetail(HospitalDetailsContainer hosp) throws SQLException {
 
         Connection connection = null;
 
@@ -37,12 +36,12 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             connection = Database.getConnection();
             ps = connection.prepareStatement(
                     "insert into hospital_details(Hospital_Id,Hospital_Name,Address,District,State,Contact)values(?,?,?,?,?,?)");
-            ps.setString(1, hosp.getHospital_id());
-            ps.setString(2, hosp.getHospital_name());
-            ps.setString(3, hosp.getHospital_address());
-            ps.setString(4, hosp.getHospital_district());
-            ps.setString(5, hosp.getHospital_state());
-            ps.setString(6, hosp.getHospital_contact());
+            ps.setString(1, hosp.getHospitalId());
+            ps.setString(2, hosp.getHospitalName());
+            ps.setString(3, hosp.getHospitalAddress());
+            ps.setString(4, hosp.getHospitalDistrict());
+            ps.setString(5, hosp.getHospitalState());
+            ps.setString(6, hosp.getHospitalContact());
             ps.executeUpdate();
 
         } catch (Exception e) {
@@ -51,7 +50,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void insert_bed_details(Bed_details bed, String hospital_id, String bed_type) throws SQLException {
+    public void insertBedDetails(BedDetailsContainer bed, String hospitalId, String bedType) throws SQLException {
         Connection connection = null;
 
         PreparedStatement ps = null;
@@ -59,8 +58,8 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement(
-                    "insert into " + bed_type + "(Bed_Id,Hospital_Id,Vacant,Occupied,Total)values(NULL,?,?,?,?)");
-            ps.setString(1, hospital_id);
+                    "insert into " + bedType + "(Bed_Id,Hospital_Id,Vacant,Occupied,Total)values(NULL,?,?,?,?)");
+            ps.setString(1, hospitalId);
             ps.setInt(2, bed.getVacant());
             ps.setInt(3, bed.getOccupied());
             ps.setInt(4, bed.getTotal());
@@ -72,7 +71,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void updatebedstatus(Bed_details bed, String hospital_id, String bed_type) throws SQLException {
+    public void updateBedStatus(BedDetailsContainer bed, String hospitalId, String bedType) throws SQLException {
         Connection connection = null;
 
         PreparedStatement ps = null;
@@ -80,11 +79,11 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement(
-                    "update " + bed_type + " set Vacant = ?,Occupied = ? ,Total = ? where Hospital_Id = ?");
+                    "update " + bedType + " set Vacant = ?,Occupied = ? ,Total = ? where Hospital_Id = ?");
             ps.setInt(1, bed.getVacant());
             ps.setInt(2, bed.getOccupied());
             ps.setInt(3, bed.getTotal());
-            ps.setString(4, hospital_id);
+            ps.setString(4, hospitalId);
             ps.executeUpdate();
 
         } catch (Exception e) {
@@ -93,12 +92,12 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public List<Hospital_details> show_hospital_details(String district) throws SQLException {
+    public List<HospitalDetailsContainer> showHospitalDetails(String district) throws SQLException {
 
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Hospital_details> hospital_list = new ArrayList<Hospital_details>();
+        List<HospitalDetailsContainer> hospitalList = new ArrayList<HospitalDetailsContainer>();
         try {
             connection = Database.getConnection();
             ps = connection
@@ -110,68 +109,68 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             e.printStackTrace();
         }
         while (rs.next()) {
-            Hospital_details hospital = new Hospital_details();
-            hospital.setHospital_id(rs.getString(1));
-            hospital.setHospital_name(rs.getString(2));
-            hospital.setHospital_address(rs.getString(3));
-            hospital.setHospital_district(rs.getString(4));
-            hospital.setHospital_state(rs.getString(5));
-            hospital.setHospital_contact(rs.getString(6));
-            hospital_list.add(hospital);
+            HospitalDetailsContainer hospital = new HospitalDetailsContainer();
+            hospital.setHospitalId(rs.getString(1));
+            hospital.setHospitalName(rs.getString(2));
+            hospital.setHospitalAddress(rs.getString(3));
+            hospital.setHospitalDistrict(rs.getString(4));
+            hospital.setHospitalState(rs.getString(5));
+            hospital.setHospitalContact(rs.getString(6));
+            hospitalList.add(hospital);
         }
         connection.close();
-        return hospital_list;
+        return hospitalList;
     }
 
-    public Hospital_details get_hospital_details(String hospital_id) throws SQLException {
+    public HospitalDetailsContainer getHospitalDetails(String hospitalId) throws SQLException {
 
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Hospital_details hospital;
+        HospitalDetailsContainer hospital;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from  hospital_details where Hospital_Id=(?)",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, hospital_id);
+            ps.setString(1, hospitalId);
             rs = ps.executeQuery();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         rs.absolute(1);
-        hospital = new Hospital_details();
-        hospital.setHospital_id(rs.getString(1));
-        hospital.setHospital_name(rs.getString(2));
-        hospital.setHospital_address(rs.getString(3));
-        hospital.setHospital_district(rs.getString(4));
-        hospital.setHospital_state(rs.getString(5));
-        hospital.setHospital_contact(rs.getString(6));
+        hospital = new HospitalDetailsContainer();
+        hospital.setHospitalId(rs.getString(1));
+        hospital.setHospitalName(rs.getString(2));
+        hospital.setHospitalAddress(rs.getString(3));
+        hospital.setHospitalDistrict(rs.getString(4));
+        hospital.setHospitalState(rs.getString(5));
+        hospital.setHospitalContact(rs.getString(6));
         connection.close();
         return hospital;
     }
 
-    public Bed_details get_bed_details(String hospital_id, String bed_type) throws SQLException {
+    public BedDetailsContainer getBedDetails(String hospitalId, String bedType) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             connection = Database.getConnection();
-            ps = connection.prepareStatement("select * from " + bed_type + " where Hospital_Id = ? ",
+            ps = connection.prepareStatement("select * from " + bedType + " where Hospital_Id = ? ",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, hospital_id);
+            ps.setString(1, hospitalId);
             rs = ps.executeQuery();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         rs.absolute(1);
-        Bed_details bed_details = new Bed_details(rs.getInt(3), rs.getInt(4), rs.getInt(5));
+        BedDetailsContainer bedDetails = new BedDetailsContainer(rs.getInt(3), rs.getInt(4), rs.getInt(5));
         connection.close();
-        return bed_details;
+        return bedDetails;
     }
 
-    public String get_hospital_password(String hospital_id) throws SQLException {
+    public String getHospitalPassword(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -179,7 +178,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from hospital_login where Hospital_Id=(?)");
-            ps.setString(1, hospital_id);
+            ps.setString(1, hospitalId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 password = rs.getString(3);
@@ -191,28 +190,27 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return password;
     }
 
-    public boolean check_hospital_exists(String hospital_id) throws SQLException {
+    public boolean checkHospitalExists(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        boolean is_registered = false;
+        boolean isRegistered = false;
         try {
             connection = Database.getConnection();
-            ps = connection.prepareStatement("select * from hospital_login where Hospital_Id= ?",
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, hospital_id);
+            ps = connection.prepareStatement("select * from hospital_login where Hospital_Id= ?");
+            ps.setString(1, hospitalId);
             rs = ps.executeQuery();
             if (rs.next()) {
-                is_registered = rs.getString(3).length() != 0;
+                isRegistered = rs.getString(3).length() != 0;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         connection.close();
-        return is_registered;
+        return isRegistered;
     }
 
-    public void insert_hospital_login_cridentials(String hospital_id, String pass) throws SQLException {
+    public void insertHospitalLoginCridentials(String hospitalId, String pass) throws SQLException {
 
         Connection connection = null;
 
@@ -223,7 +221,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             connection = Database.getConnection();
             ps = connection
                     .prepareStatement("insert into hospital_login(User_id,Hospital_Id,Password)values(NULL,?,?)");
-            ps.setString(1, hospital_id);
+            ps.setString(1, hospitalId);
             ps.setString(2, pass);
             ps.executeUpdate();
 
@@ -233,7 +231,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public boolean check_user_exists(String adhaar_id) throws SQLException {
+    public boolean checkUserExists(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -241,7 +239,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from user_login where Adhaar_id= ? ");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 exits = rs.getString(3).length() != 0;
@@ -253,7 +251,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return exits;
     }
 
-    public void insertuserDetail(User_details user) throws SQLException {
+    public void insertUserDetail(UserDetailsContainer user) throws SQLException {
 
         Connection connection = null;
 
@@ -263,8 +261,8 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             connection = Database.getConnection();
             ps = connection.prepareStatement(
                     "insert into user_details(Adhaar_id,User_Name,Address,District,State,Age,Gender,Contact)values(?,?,?,?,?,?,?,?)");
-            ps.setString(1, user.getAdhaar_id());
-            ps.setString(2, user.getUser_name());
+            ps.setString(1, user.getAdhaarId());
+            ps.setString(2, user.getUserName());
             ps.setString(3, user.getAddress());
             ps.setString(4, user.getDistrict());
             ps.setString(5, user.getState());
@@ -279,7 +277,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void updateuserDetail(User_details user) throws SQLException {
+    public void updateUserDetail(UserDetailsContainer user) throws SQLException {
 
         Connection connection = null;
 
@@ -289,14 +287,14 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             connection = Database.getConnection();
             ps = connection.prepareStatement(
                     "UPDATE user_details SET User_Name = ? ,Address = ? ,District = ? ,State = ? ,Age = ?,Gender = ?,Contact = ? WHERE Adhaar_id = ?");
-            ps.setString(1, user.getUser_name());
+            ps.setString(1, user.getUserName());
             ps.setString(2, user.getAddress());
             ps.setString(3, user.getDistrict());
             ps.setString(4, user.getState());
             ps.setString(5, user.getAge());
             ps.setString(6, user.getGender());
             ps.setString(7, user.getContact());
-            ps.setString(8, user.getAdhaar_id());
+            ps.setString(8, user.getAdhaarId());
             ps.executeUpdate();
 
         } catch (Exception e) {
@@ -305,7 +303,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void insert_user_login_cridentials(String adhaar_id, String password) throws SQLException {
+    public void insertUserLoginCridentials(String adhaarId, String password) throws SQLException {
         Connection connection = null;
 
         PreparedStatement ps = null;
@@ -314,7 +312,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
 
             connection = Database.getConnection();
             ps = connection.prepareStatement("insert into user_login(User_id,Adhaar_Id,Password)values(NULL,?,?)");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.setString(2, password);
             ps.executeUpdate();
 
@@ -324,7 +322,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public boolean check_user_reserved_bed(String adhaar_id, String hospital_id) throws SQLException {
+    public boolean checkUserReservedBed(String adhaarId, String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -333,9 +331,9 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             connection = Database.getConnection();
             ps = connection.prepareStatement(
                     "select * from reservation where Adhaar_id = ? AND Status = ? AND hospital_Id = ?");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.setString(2, "Reserved");
-            ps.setString(3, hospital_id);
+            ps.setString(3, hospitalId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 exits = rs.getString(3).length() != 0;
@@ -347,7 +345,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return exits;
     }
 
-    public boolean check_user_reserved(String adhaar_id) throws SQLException {
+    public boolean checkUserReserved(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -355,7 +353,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from reservation where Adhaar_id = ? AND Status = ?");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.setString(2, "Reserved");
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -368,7 +366,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return exits;
     }
 
-    public boolean check_user_admitted(String adhaar_id) throws SQLException {
+    public boolean checkUserAdmitted(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -376,7 +374,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from reservation where Adhaar_id= ? AND Status= ?");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.setString(2, "Admitted");
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -389,57 +387,56 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return exits;
     }
 
-    public List<Reservation_details> get_admitted_user(String hospital_id) throws SQLException {
+    public List<ReservationDetailsContainer> getAdmittedUser(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Reservation_details> reservation_list = new ArrayList<Reservation_details>();
+        List<ReservationDetailsContainer> reservationList = new ArrayList<ReservationDetailsContainer>();
         try {
             connection = Database.getConnection();
-            ps = connection.prepareStatement("SELECT * FROM reservation  where Status=? and hospital_id=?",
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            ps = connection.prepareStatement("SELECT * FROM reservation  where Status = ? and hospital_Id = ? ");
             ps.setString(1, "Admitted");
-            ps.setString(2, hospital_id);
+            ps.setString(2, hospitalId);
             rs = ps.executeQuery();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         while (rs.next()) {
-            Reservation_details reserve = new Reservation_details();
-            reserve.setAdhaar_id(rs.getString(2));
-            reserve.setHospital_id(rs.getString(3));
+            ReservationDetailsContainer reserve = new ReservationDetailsContainer();
+            reserve.setAdhaarId(rs.getString(2));
+            reserve.setHospitalId(rs.getString(3));
             reserve.setDistrict(rs.getString(4));
             reserve.setState(rs.getString(5));
             reserve.setContact(rs.getString(6));
-            reserve.setBed_type(rs.getString(7));
+            reserve.setBedType(rs.getString(7));
             reserve.setStatus(rs.getString(8));
             reserve.setDate(rs.getString(9));
-            reservation_list.add(reserve);
+            reservationList.add(reserve);
         }
         connection.close();
-        return reservation_list;
+        return reservationList;
     }
 
-    public User_details get_user_details(String adhaar_id) throws SQLException {
+    public UserDetailsContainer getUserDetails(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        User_details user;
+        UserDetailsContainer user;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from user_details where Adhaar_id= (?) ",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             rs = ps.executeQuery();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         rs.absolute(1);
-        user = new User_details();
-        user.setAdhaar_id(rs.getString(1));
-        user.setUser_name(rs.getString(2));
+        user = new UserDetailsContainer();
+        user.setAdhaarId(rs.getString(1));
+        user.setUserName(rs.getString(2));
         user.setAddress(rs.getString(3));
         user.setDistrict(rs.getString(4));
         user.setState(rs.getString(5));
@@ -450,7 +447,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return user;
     }
 
-    public void insert_reservation_details(Reservation_details reserve) throws SQLException {
+    public void insertReservationDetails(ReservationDetailsContainer reserve) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
@@ -458,12 +455,12 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             connection = Database.getConnection();
             ps = connection.prepareStatement(
                     "insert into reservation(Reservation_Id,Adhaar_id,hospital_Id,District,State,Contact,Bed_Type,Status,Date_and_Time)values(NULL,?,?,?,?,?,?,?,NOW())");
-            ps.setString(1, reserve.getAdhaar_id());
-            ps.setString(2, reserve.getHospital_id());
+            ps.setString(1, reserve.getAdhaarId());
+            ps.setString(2, reserve.getHospitalId());
             ps.setString(3, reserve.getDistrict());
             ps.setString(4, reserve.getState());
             ps.setString(5, reserve.getContact());
-            ps.setString(6, reserve.getBed_type());
+            ps.setString(6, reserve.getBedType());
             ps.setString(7, reserve.getStatus());
             ps.executeUpdate();
         } catch (Exception e) {
@@ -472,33 +469,33 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public boolean user_is_reservered(String adhaar_id) throws SQLException {
+    public boolean userIsReservered(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        boolean is_reserved = false;
+        boolean isReserved = false;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("SELECT Status FROM reservation WHERE Adhaar_id = ? ");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             rs = ps.executeQuery();
             if (rs.next()) {
-                is_reserved = rs.getString(1).equals("Reserved");
+                isReserved = rs.getString(1).equals("Reserved");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         connection.close();
-        return is_reserved;
+        return isReserved;
     }
 
-    public void cancel_reservation(String adhaar_id) throws SQLException {
+    public void cancelReservation(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("DELETE FROM reservation WHERE Adhaar_id = ? ");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -506,13 +503,13 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void cancel_reservation_deregister_hospital(String hospital_id) throws SQLException {
+    public void cancelReservationDeregisterHospital(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
-            ps = connection.prepareStatement("DELETE FROM reservation WHERE hospital_id = ? ");
-            ps.setString(1, hospital_id);
+            ps = connection.prepareStatement("DELETE FROM reservation WHERE hospital_Id = ? ");
+            ps.setString(1, hospitalId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -520,13 +517,13 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void deregister_hospital(String hospital_id) throws SQLException {
+    public void deregisterHospital(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("DELETE FROM hospital_details WHERE Hospital_Id = ? ");
-            ps.setString(1, hospital_id);
+            ps.setString(1, hospitalId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -534,13 +531,13 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void deregister_user(String adhaar_id) throws SQLException {
+    public void deregisterUser(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("DELETE FROM user_details WHERE Adhaar_id = ? ");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -548,13 +545,13 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void deregister_hospital_bed_details(String hospital_id, String bed_type) throws SQLException {
+    public void deregisterHospitalBedDetails(String hospitalId, String bedType) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
-            ps = connection.prepareStatement("DELETE FROM " + bed_type + " WHERE hospital_id = ? ");
-            ps.setString(1, hospital_id);
+            ps = connection.prepareStatement("DELETE FROM " + bedType + " WHERE Hospital_Id = ? ");
+            ps.setString(1, hospitalId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -562,45 +559,44 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public Reservation_details get_user_reservation_details(String adhaar_id) throws SQLException {
+    public ReservationDetailsContainer getUserReservationDetails(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        Reservation_details reserve;
+        ReservationDetailsContainer reserve;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("SELECT * FROM reservation WHERE Adhaar_id = ? ",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             rs = ps.executeQuery();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         rs.absolute(1);
-        reserve = new Reservation_details();
-        reserve.setAdhaar_id(rs.getString(2));
-        reserve.setHospital_id(rs.getString(3));
+        reserve = new ReservationDetailsContainer();
+        reserve.setAdhaarId(rs.getString(2));
+        reserve.setHospitalId(rs.getString(3));
         reserve.setDistrict(rs.getString(4));
         reserve.setState(rs.getString(5));
         reserve.setContact(rs.getString(6));
-        reserve.setBed_type(rs.getString(7));
+        reserve.setBedType(rs.getString(7));
         reserve.setStatus(rs.getString(8));
         reserve.setDate(rs.getString(9));
         connection.close();
         return reserve;
     }
 
-    public List<Reservation_details> get_expired_reservation() throws SQLException {
+    public List<ReservationDetailsContainer> getExpiredReservation() throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Reservation_details> reservation_list = new ArrayList<Reservation_details>();
+        List<ReservationDetailsContainer> reservationList = new ArrayList<ReservationDetailsContainer>();
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement(
-                    "SELECT * FROM reservation  where Date_and_Time  < NOW() - interval 24 hour and Status = ?",
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+                    "SELECT * FROM reservation  where Date_and_Time  < NOW() - interval 24 hour and Status = ?");
             ps.setString(1, "Reserved");
             rs = ps.executeQuery();
 
@@ -608,22 +604,22 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             e.printStackTrace();
         }
         while (rs.next()) {
-            Reservation_details reserve = new Reservation_details();
-            reserve.setAdhaar_id(rs.getString(2));
-            reserve.setHospital_id(rs.getString(3));
+            ReservationDetailsContainer reserve = new ReservationDetailsContainer();
+            reserve.setAdhaarId(rs.getString(2));
+            reserve.setHospitalId(rs.getString(3));
             reserve.setDistrict(rs.getString(4));
             reserve.setState(rs.getString(5));
             reserve.setContact(rs.getString(6));
-            reserve.setBed_type(rs.getString(7));
+            reserve.setBedType(rs.getString(7));
             reserve.setStatus(rs.getString(8));
             reserve.setDate(rs.getString(9));
-            reservation_list.add(reserve);
+            reservationList.add(reserve);
         }
         connection.close();
-        return reservation_list;
+        return reservationList;
     }
 
-    public void hospital_acknowlegde_user(String adhaar_id) throws SQLException {
+    public void hospitalAcknowlegdeUser(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
@@ -632,7 +628,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
             ps = connection
                     .prepareStatement("UPDATE reservation SET Status = ? , Date_and_Time = NOW() WHERE Adhaar_id= ? ");
             ps.setString(1, "Admitted");
-            ps.setString(2, adhaar_id);
+            ps.setString(2, adhaarId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -640,7 +636,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public String get_user_password(String adhaar_id) throws SQLException {
+    public String getUserPassword(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -648,7 +644,7 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("select * from user_login where Adhaar_id=(?)");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             rs = ps.executeQuery();
             if (rs.next()) {
                 password = rs.getString(3);
@@ -660,14 +656,14 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         return password;
     }
 
-    public void update_user_password(String adhaar_id, String password) throws SQLException {
+    public void updateUserPassword(String adhaarId, String password) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("UPDATE user_login SET Password = ? where Adhaar_id=(?)");
             ps.setString(1, password);
-            ps.setString(2, adhaar_id);
+            ps.setString(2, adhaarId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -675,14 +671,14 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void update_hospital_password(String hospital_id, String password) throws SQLException {
+    public void updateHospitalPassword(String hospitalId, String password) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("UPDATE hospital_login SET Password = ? where Hospital_Id=(?)");
             ps.setString(1, password);
-            ps.setString(2, hospital_id);
+            ps.setString(2, hospitalId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -690,19 +686,19 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void update_hospital_details(Hospital_details hospital) throws SQLException {
+    public void updateHospitalDetails(HospitalDetailsContainer hospital) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement(
                     "UPDATE hospital_details SET Hospital_Name = ?,Address = ?,District = ?,State = ?,Contact = ?  where Hospital_Id=(?)");
-            ps.setString(1, hospital.getHospital_name());
-            ps.setString(2, hospital.getHospital_address());
-            ps.setString(3, hospital.getHospital_district());
-            ps.setString(4, hospital.getHospital_state());
-            ps.setString(5, hospital.getHospital_contact());
-            ps.setString(6, hospital.getHospital_id());
+            ps.setString(1, hospital.getHospitalName());
+            ps.setString(2, hospital.getHospitalAddress());
+            ps.setString(3, hospital.getHospitalDistrict());
+            ps.setString(4, hospital.getHospitalState());
+            ps.setString(5, hospital.getHospitalContact());
+            ps.setString(6, hospital.getHospitalId());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -710,13 +706,13 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void delete_hospital_login(String hospital_id) throws SQLException {
+    public void deleteHospitalLogin(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("DELETE FROM hospital_login  where Hospital_Id=(?)");
-            ps.setString(1, hospital_id);
+            ps.setString(1, hospitalId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -724,13 +720,13 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public void delete_user_login(String adhaar_id) throws SQLException {
+    public void deleteUserLogin(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {
             connection = Database.getConnection();
             ps = connection.prepareStatement("DELETE FROM user_login  where Adhaar_id=(?)");
-            ps.setString(1, adhaar_id);
+            ps.setString(1, adhaarId);
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -738,35 +734,34 @@ public class Database implements Hospital_interface, Insert_bed_details_interfac
         connection.close();
     }
 
-    public List<Reservation_details> get_deregistered_user(String hospital_id) throws SQLException {
+    public List<ReservationDetailsContainer> getDeregisteredUser(String hospitalId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
-        List<Reservation_details> reservation_list = new ArrayList<Reservation_details>();
+        List<ReservationDetailsContainer> reservationList = new ArrayList<ReservationDetailsContainer>();
         try {
             connection = Database.getConnection();
-            ps = connection.prepareStatement("SELECT * FROM reservation  where hospital_id = ?",
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, hospital_id);
+            ps = connection.prepareStatement("SELECT * FROM reservation  where hospital_Id = ?");
+            ps.setString(1, hospitalId);
             rs = ps.executeQuery();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
         while (rs.next()) {
-            Reservation_details reserve = new Reservation_details();
-            reserve.setAdhaar_id(rs.getString(2));
-            reserve.setHospital_id(rs.getString(3));
+            ReservationDetailsContainer reserve = new ReservationDetailsContainer();
+            reserve.setAdhaarId(rs.getString(2));
+            reserve.setHospitalId(rs.getString(3));
             reserve.setDistrict(rs.getString(4));
             reserve.setState(rs.getString(5));
             reserve.setContact(rs.getString(6));
-            reserve.setBed_type(rs.getString(7));
+            reserve.setBedType(rs.getString(7));
             reserve.setStatus(rs.getString(8));
             reserve.setDate(rs.getString(9));
-            reservation_list.add(reserve);
+            reservationList.add(reserve);
         }
         connection.close();
-        return reservation_list;
+        return reservationList;
     }
 
 }

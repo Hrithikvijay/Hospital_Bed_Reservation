@@ -1,21 +1,21 @@
 package Bed_reserve;
 
-public class Reservation_details {
-    private String hospital_id;
-    private String bed_type;
+public class ReservationDetailsContainer {
+    private String hospitalId;
+    private String bedType;
     private String district;
     private String state;
-    private String adhaar_id;
+    private String adhaarId;
     private String contact;
     private String status;
     private String date;
 
-    public void setHospital_id(String hospital_id) {
-        this.hospital_id = hospital_id;
+    public void setHospitalId(String hospitalId) {
+        this.hospitalId = hospitalId;
     }
 
-    public void setBed_type(String bed_type) {
-        this.bed_type = bed_type;
+    public void setBedType(String bedType) {
+        this.bedType = bedType;
     }
 
     public void setDistrict(String district) {
@@ -26,8 +26,8 @@ public class Reservation_details {
         this.state = state;
     }
 
-    public void setAdhaar_id(String adhaar_id) {
-        this.adhaar_id = adhaar_id;
+    public void setAdhaarId(String adhaarId) {
+        this.adhaarId = adhaarId;
     }
 
     public void setContact(String contact) {
@@ -42,12 +42,12 @@ public class Reservation_details {
         this.date = date;
     }
 
-    public String getHospital_id() {
-        return hospital_id;
+    public String getHospitalId() {
+        return hospitalId;
     }
 
-    public String getBed_type() {
-        return bed_type;
+    public String getBedType() {
+        return bedType;
     }
 
     public String getDistrict() {
@@ -58,8 +58,8 @@ public class Reservation_details {
         return state;
     }
 
-    public String getAdhaar_id() {
-        return adhaar_id;
+    public String getAdhaarId() {
+        return adhaarId;
     }
 
     public String getStatus() {
