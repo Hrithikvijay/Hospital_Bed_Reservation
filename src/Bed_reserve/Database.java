@@ -21,7 +21,7 @@ public class Database implements HospitalDatabaseInterface, UserDatabaseInterfac
         Connection connection = null;
         Class.forName("com.mysql.cj.jdbc.Driver");
         // Please enter your local host password
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bed_reservation", "root", "#Hrithik25");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bed_reservation", "root", "password");
         return connection;
 
     }

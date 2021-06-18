@@ -26,7 +26,7 @@ public class Main {
             }
             else if(choice.equals("10")){
                 //Exit
-                System.out.println("\n\t----------Thank You Using Our Application----------");
+                System.out.println("\n\t----------Thank You for Using Our Application----------");
                 break;
             }
             else {
