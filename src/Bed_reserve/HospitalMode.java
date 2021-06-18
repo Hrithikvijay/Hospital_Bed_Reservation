@@ -7,13 +7,10 @@ public class HospitalMode {
     public void hospitalMode(HospitalDatabaseInterface hospitalDb,UserDatabaseInterface userDb,ReserveBedInterface reserveBedDB,GovernmentDbInterface governmentDb) throws SQLException{
         Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.println("\nPlease Select the choice given below : ");
-            System.out.println("\n1.Register Hospital");
-            System.out.println("\n2.Hospital login");
-            System.out.println("\n10.Back");
+            HospitalMode.hospitalChoice();
             System.out.print("\nEnter Choice : ");
-            String adminchoice = sc.nextLine();
-            if (adminchoice.equals("1")) {
+            String hospitalchoice = sc.nextLine();
+            if (hospitalchoice.equals("1")) {
                 // Register Hospital
                 String hospitalId = LoginUtils.getHospitalId();
                 if (hospitalDb.checkHospitalExists(hospitalId)) {
@@ -29,13 +26,13 @@ public class HospitalMode {
                 System.out.println("Register hospital :-");
                 hospital.registerHospital();
                 System.out.println("\n\t Successfully registered");
-            } else if (adminchoice.equals("2")) {
+            } else if (hospitalchoice.equals("2")) {
                 // Hospital login
                 ReservationBedUtils.deleteExpiredReservation(reserveBedDB);
                 HospitalLogin login = new HospitalLogin();
                 login.hospitalLogin(reserveBedDB, hospitalDb, userDb,
                         governmentDb);
-            } else if (adminchoice.equals("10")) {
+            } else if (hospitalchoice.equals("10")) {
                 // Back
                 break;
             } else {
@@ -43,5 +40,11 @@ public class HospitalMode {
             }
 
         }
+    }
+    private static void hospitalChoice(){
+        System.out.println("\nPlease Select the choice given below : ");
+        System.out.println("\n1.Register Hospital");
+        System.out.println("\n2.Hospital login");
+        System.out.println("\n10.Back");
     }
 }

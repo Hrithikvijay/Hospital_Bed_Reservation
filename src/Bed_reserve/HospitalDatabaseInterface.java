@@ -24,7 +24,7 @@ public interface HospitalDatabaseInterface {
 
     public void deregisterHospital(String hospitalId) throws SQLException;
 
-    public void hospitalAcknowlegdeUser(String adhaarId) throws SQLException;
+    public void hospitalAdmitUser(String adhaarId) throws SQLException;
 
     public BedDetailsContainer getBedDetails(String hospitalId, String bedType) throws SQLException;
 

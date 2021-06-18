@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UserDatabaseInterface {
-    public List<HospitalDetailsContainer> showHospitalDetails(String district) throws SQLException;
+    public List<HospitalDetailsContainer> getHospitalDetailsList(String district) throws SQLException;
 
     public BedDetailsContainer getBedDetails(String hospitalId, String bedType) throws SQLException;
 

@@ -25,22 +25,12 @@ public class HospitalLogin {
                 // printing welcome note
                 System.out.println("\nWelcome " + hospitalDetails.getHospitalName());
                 while (true) {
-                    System.out.println("\nPlease Select the choice : ");
-                    System.out.println("\n\t1.Acknowledge patient");
-                    System.out.println("\n\t2.Discharge patient");
-                    System.out.println("\n\t3.View the details of patients");
-                    System.out.println("\n\t4.Hospital Details");
-                    System.out.println("\n\t5.Available bed Details");
-                    System.out.println("\n\t6.Update Hospital Details");
-                    System.out.println("\n\t7.Update bed Availability");
-                    System.out.println("\n\t8.Change password");
-                    System.out.println("\n\t9.Deregister Hospital");
-                    System.out.println("\n\t10.Back");
+                    HospitalLogin.hospitalChoice();
                     System.out.print("\n\tEnter the choice : ");
                     String choice = sc.nextLine();
                     if (choice.equals("1")) {
                         // Acknowledge patient
-                        HospitalLogin.acknowledgePatient(hospitalDb, reserveBedDb, hospitalId);
+                        HospitalLogin.admitPatient(hospitalDb, reserveBedDb, hospitalId);
                         System.out.println("\nPress Enter to continue...");
                         sc.nextLine();
                     } else if (choice.equals("2")) {
@@ -111,7 +101,19 @@ public class HospitalLogin {
             }
         }
     }
-
+    private static void hospitalChoice(){
+        System.out.println("\nPlease Select the choice : ");
+        System.out.println("\n\t1.Admit patient");
+        System.out.println("\n\t2.Discharge patient");
+        System.out.println("\n\t3.View the details of patients");
+        System.out.println("\n\t4.Hospital Details");
+        System.out.println("\n\t5.Available bed Details");
+        System.out.println("\n\t6.Update Hospital Details");
+        System.out.println("\n\t7.Update bed Availability");
+        System.out.println("\n\t8.Change password");
+        System.out.println("\n\t9.Deregister Hospital");
+        System.out.println("\n\t10.Back");
+    }
     private static void forgotHospitalPassword(String hospitalId, HospitalDatabaseInterface hospitalDb)
             throws SQLException {
         // password can be changed using otp..
@@ -260,10 +262,10 @@ public class HospitalLogin {
         System.out.println("\n\tSuccessfully Updated\n");
     }
 
-    private static void acknowledgePatient(HospitalDatabaseInterface hospitalDb, ReserveBedInterface reserveBedDb,
+    private static void admitPatient(HospitalDatabaseInterface hospitalDb, ReserveBedInterface reserveBedDb,
             String hospitalId) throws SQLException {
         Scanner sc = new Scanner(System.in);
-        System.out.print("\nTo Acknowledge the patient..Please Enter the patient's Adhaar id :\n");
+        System.out.print("\nTo Admit the patient..Please Enter the patient's Adhaar id :\n");
         String adhaarId = LoginUtils.getAdhaarId();
         if (reserveBedDb.checkUserReservedBed(adhaarId, hospitalId)) {
             // display reservation details
@@ -271,11 +273,11 @@ public class HospitalLogin {
             UserDetailsContainer user=reserveBedDb.getUserDetails(adhaarId);
             System.out.println("\nPatient Details      :");
             HospitalLogin.displayPatientDetails(reserve, user);
-            System.out.print("\n\tDo you want to Acknowlege the Patient [Y\\N]: ");
+            System.out.print("\n\tDo you want to Admit the Patient [Y\\N]: ");
             String acknowledge = sc.nextLine().toUpperCase();
             if (acknowledge.equals("Y")) {
-                hospitalDb.hospitalAcknowlegdeUser(adhaarId);
-                System.out.println("\n\tSuccessfully Acknowledged...");
+                hospitalDb.hospitalAdmitUser(adhaarId);
+                System.out.println("\n\tSuccessfully Admitted...");
             } else {
             }
         } else {

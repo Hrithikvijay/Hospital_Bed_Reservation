@@ -7,7 +7,7 @@ public class CheckBedAvailability {
     // to display the available beds in list of hospitals in the selected district.
     public Boolean displayBedAvailability(UserDatabaseInterface userDb) throws SQLException {
 
-        List<HospitalDetailsContainer> hospitalList = userDb.showHospitalDetails(StateAndDistrictNames.getDistrict()[1]);
+        List<HospitalDetailsContainer> hospitalList = userDb.getHospitalDetailsList(StateAndDistrictNames.getDistrict()[1]);
         if (hospitalList.size() == 0) {
             System.out.println("\n\tSorry...No hospitals are available in this district");
             return false;

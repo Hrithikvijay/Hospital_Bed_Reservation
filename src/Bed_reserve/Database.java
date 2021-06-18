@@ -21,7 +21,7 @@ public class Database implements HospitalDatabaseInterface, UserDatabaseInterfac
         Connection connection = null;
         Class.forName("com.mysql.cj.jdbc.Driver");
         // Please enter your local host password
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bed_reservation", "root", "password");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/bed_reservation", "root", "#Hrithik25");
         return connection;
 
     }
@@ -92,7 +92,7 @@ public class Database implements HospitalDatabaseInterface, UserDatabaseInterfac
         connection.close();
     }
 
-    public List<HospitalDetailsContainer> showHospitalDetails(String district) throws SQLException {
+    public List<HospitalDetailsContainer> getHospitalDetailsList(String district) throws SQLException {
 
         Connection connection = null;
         PreparedStatement ps = null;
@@ -619,7 +619,7 @@ public class Database implements HospitalDatabaseInterface, UserDatabaseInterfac
         return reservationList;
     }
 
-    public void hospitalAcknowlegdeUser(String adhaarId) throws SQLException {
+    public void hospitalAdmitUser(String adhaarId) throws SQLException {
         Connection connection = null;
         PreparedStatement ps = null;
         try {

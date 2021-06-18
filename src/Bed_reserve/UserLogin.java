@@ -21,14 +21,7 @@ public class UserLogin {
                 UserDetailsContainer userWelcome = userDb.getUserDetails(adhaarId);
                 System.out.println("\nWelcome " + userWelcome.getUserName());
                 while (true) {
-                    System.out.println("\nPlease Select the choice given below : ");
-                    System.out.println("1.Cancel reservation");
-                    System.out.println("2.View reservation details");
-                    System.out.println("3.User details");
-                    System.out.println("4.Update user details");
-                    System.out.println("5.Change password");
-                    System.out.println("6.Deregister user details");
-                    System.out.println("10.Back");
+                    UserLogin.loginChoice();
                     System.out.print("\nEnter Choice : ");
                     String login_choice = sc.nextLine();
                     if (login_choice.equals("1")) {
@@ -110,6 +103,16 @@ public class UserLogin {
             System.out.println("\n\tNo Registration has been made..please register to continue");
         }
 
+    }
+    private static void loginChoice(){
+        System.out.println("\nPlease Select the choice given below : ");
+        System.out.println("1.Cancel reservation");
+        System.out.println("2.View reservation details");
+        System.out.println("3.User details");
+        System.out.println("4.Update user details");
+        System.out.println("5.Change password");
+        System.out.println("6.Deregister user details");
+        System.out.println("10.Back");
     }
     
     public static void displayUserDetails(UserDetailsContainer user) {
