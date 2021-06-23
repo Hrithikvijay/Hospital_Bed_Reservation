@@ -20,7 +20,7 @@ public class GovernmentDb implements GovernmentDbInterface {
         Connection connection = null;
         Class.forName("com.mysql.cj.jdbc.Driver");
         //Please enter your local host password
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/government", "root", "password");
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/government", "root", "password ");
         return connection;
     }
 
